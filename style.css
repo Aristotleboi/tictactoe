@@ -1,0 +1,33 @@
+body {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+}
+
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.info {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+}
+
+.gameboard {
+    justify-content: center;
+    display: grid;
+    grid-template-columns: 100px 100px 100px;
+    grid-template-rows: 100px 100px 100px;
+    color: black;
+}
+
+.box {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid black;
+    font-size: 36px;
+}
