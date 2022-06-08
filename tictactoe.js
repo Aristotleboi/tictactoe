@@ -51,21 +51,37 @@ const gameFlow = (() => {
     const playRound = (box) => {
         player = determineTurn()
         gameBoard.move(player, box)
+        winState(player)
     }
     const checkWin = (p1, p2, p3, mark) => {
         let check1 = gameBoard.check(p1)
         let check2 = gameBoard.check(p2)
         let check3 = gameBoard.check(p3)
         if (check1 == mark && check2 == mark && check3 == mark) {
-            console.log('win')
+            console.log('winstate')
+            return mark
         } else {
-            console.log('lose')
+            console.log('losestate')
+            return '?'
         }
     }
+    const winState = (mark) => {
+        player = mark;
+        state = checkWin (0, 1, 2, player)
+        if (state == player) {
+            console.log('true')
+        } else {
+            console.log('false')
+        }
+
+        
+    }
+    const winner = () => "winner";
     return {
         determineTurn,
         playRound,
-        checkWin
+        checkWin,
+        winState
     }
 })();
 
