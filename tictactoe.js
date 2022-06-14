@@ -38,7 +38,7 @@ const Player = (name, playerNumber) => {
 
 const gameFlow = (() => { 
     let turn = 1;  
-    const determineTurn = () => {
+    const determineWhosTurn = () => {
         if (turn % 2 == 0) {
             takeTurn();
             return 'o';
@@ -49,7 +49,7 @@ const gameFlow = (() => {
     }
     const takeTurn = () => turn++;
     const playRound = (box) => {
-        player = determineTurn()
+        player = determineWhosTurn()
         gameBoard.move(player, box)
         winState(player)
     }
@@ -67,18 +67,47 @@ const gameFlow = (() => {
     }
     const winState = (mark) => {
         player = mark;
+        //all horizontal win checks
         state = checkWin (0, 1, 2, player)
         if (state == player) {
-            console.log('true')
-        } else {
-            console.log('false')
+            return displayController.openModal('win')
         }
-
-        
+        state = checkWin (3, 4, 5, player)
+        if (state == player) {
+            return displayController.openModal('win')
+        }
+        state = checkWin (6, 7, 8, player)
+        if (state == player) {
+            return displayController.openModal('win')
+        }
+        //all vertical checks
+        state = checkWin (0, 3, 6, player)
+        if (state == player) {
+            return displayController.openModal('win')
+        }
+        state = checkWin (1, 4, 7, player)
+        if (state == player) {
+            return displayController.openModal('win')
+        }
+        state = checkWin (2, 5, 8, player)
+        if (state == player) {
+            return displayController.openModal('win')
+        }
+        //both diagonal checks
+        state = checkWin (0, 4, 8, player)
+        if (state == player) {
+            return displayController.openModal('win')
+        }
+        state = checkWin (2, 4, 6, player)
+        if (state == player) {
+            return displayController.openModal('win')
+        }
+        if (turn == 10) {
+            return displayController.openModal('draw')
+        }
     }
-    const winner = () => "winner";
     return {
-        determineTurn,
+        determineWhosTurn,
         playRound,
         checkWin,
         winState
@@ -95,7 +124,12 @@ const displayController = (() => {
         box.classList.add('box');
         box.innerText = gameBoard.check(i);
         box.setAttribute('id', i)
+        //Button for clicking boxes
         box.addEventListener('click', e => {
+            let repeatCheck = gameBoard.check(box.id)
+            if (repeatCheck != '') {
+                return console.log('repeat')
+            }
             gameFlow.playRound(box.id)
             displayBoard()
         })
@@ -106,8 +140,52 @@ const displayController = (() => {
         let boxes = boardDom.querySelectorAll('div');
         boxes.forEach((div) => div.remove())
     }
+    //everything in here has to do with the pop up win or tie modal
+    const modal = document.querySelector('#modal')
+    const overlay = document.querySelector('#overlay')
+    const openModal = (winner) => {
+        if (modal == null) return
+        if (winner == "win") {
+            let pText = document.createElement('p')
+            pText.innerText = 'You Win'
+            pText.setAttribute('class', 'win')
+            modal.appendChild(pText)
+            let returnButton = document.createElement('button')
+            returnButton.innerText = 'Return';
+            returnButton.addEventListener('click', () => {
+                displayController.closeModal()
+            })
+            returnButton.setAttribute('class', 'return')
+            modal.appendChild(returnButton)
+            modal.classList.add('active');
+            overlay.classList.add('active');
+        }
+        if (winner == 'draw') {
+            let pText = document.createElement('p')
+            pText.innerText = 'Draw'
+            pText.setAttribute('class', 'draw')
+            modal.appendChild(pText)
+            let returnButton = document.createElement('button')
+            returnButton.innerText = 'Return';
+            returnButton.addEventListener('click', () => {
+                displayController.closeModal()
+            })
+            returnButton.setAttribute('class', 'return')
+            modal.appendChild(returnButton)
+            modal.classList.add('active');
+            overlay.classList.add('active');
+        }
+    }
+    const closeModal = () => {
+        if (modal == null) return
+        modal.classList.remove('active');
+        overlay.classList.remove('active')
+    }
+    //end
     return {
-        displayBoard
+        displayBoard,
+        openModal,
+        closeModal
     }
 })();
 
@@ -115,3 +193,8 @@ const playerOne = Player('Me', 1);
 const playerTwo = Player('Computer', 2);
 
 displayController.displayBoard()
+
+const returnButton = document.createElement('button')
+returnButton.addEventListener('click', () => {
+    displayController.closeModal()
+})
